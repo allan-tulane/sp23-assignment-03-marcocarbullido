@@ -42,8 +42,8 @@ def parens_match_iterative(mylist):
     >>>parens_match_iterative(['('])
     False
     """
-    ### TODO
-    pass
+    result = iterate(parens_update, 0, mylist)
+    return result == 0
 
 
 def parens_update(current_output, next_input):
@@ -58,8 +58,12 @@ def parens_update(current_output, next_input):
     Returns:
       the updated value of `current_output`
     """
-    ###TODO
-    pass
+    if next_input == '(':
+        return current_output + 1
+    elif next_input == ')':
+        return current_output - 1
+    else:
+        return current_output
 
 
 def test_parens_match_iterative():
@@ -87,8 +91,9 @@ def parens_match_scan(mylist):
     False
     
     """
-    ###TODO
-    pass
+    scanned, final = scan(lambda x, y: x + y, 0, map(paren_map, mylist))
+    return (final == 0) and (reduce(min_f, float('inf'), scanned) >= 0) #DONE
+
 
 def scan(f, id_, a):
     """
@@ -137,6 +142,7 @@ def test_parens_match_scan():
     assert parens_match_scan(['(']) == False
     assert parens_match_scan([')']) == False
 
+
 #### Divide and conquer solution
 
 def parens_match_dc(mylist):
@@ -160,9 +166,17 @@ def parens_match_dc_helper(mylist):
       L is the number of unmatched left parentheses. This output is used by 
       parens_match_dc to return the final True or False value
     """
-    ###TODO
-    pass
-    
+    if len(mylist) == 1:
+        if mylist[0] == '(':
+            return (0, 1)
+        else:
+            return (1, 0)
+
+    mid = len(mylist) // 2
+    left = parens_match_dc_helper(mylist[:mid])
+    right = parens_match_dc_helper(mylist[mid:])
+    merge = min(left[0], right[1])
+    return (left[0] + right[0] - merge, left[1] + right[1] - merge)
 
 def test_parens_match_dc():
     assert parens_match_dc(['(', ')']) == True
